@@ -1,17 +1,18 @@
-import axios from "axios";
+import axios from "./axios";
 import { useAuthStore } from "../store/auth";
 import { jwtDecode } from "jwt-decode";
 import Cookies from 'js-cookie';
 
 export const login = async(email, password) => {
+    console.log(email, password)
     try {
-        const {data, status} = await axios.post("user/token/", {
+        const {data, status} = await axios.post("/user/token/", {
             email, 
             password
         });
         if(status === 200){
+            
             setAuthUser(data.access, data.refresh);
-
             // Alert - Signed In Successfully
         }
         return {data, error: null};
@@ -68,7 +69,7 @@ export const setUser = async () => {
 }
 
 export const setAuthUser = (access_token, refresh_token) => {
-    Cookies.set(
+    Cookies.set(        
         'access_token', access_token,
         {
             expires: 1,
@@ -82,8 +83,9 @@ export const setAuthUser = (access_token, refresh_token) => {
             secure: true
         }
     );
-
+    
     const user = jwtDecode(access_token) ?? null;
+    console.log(access_token)
 
     if (user) {
         useAuthStore.getState().setUser(user)
